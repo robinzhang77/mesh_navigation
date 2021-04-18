@@ -1,0 +1,10 @@
+D:\work\UnityProjects\navmesh_c#\navimeshtest\navimeshtest\bin\Debug\navimeshtest.exe.config
+D:\work\UnityProjects\navmesh_c#\navimeshtest\navimeshtest\bin\Debug\navimeshtest.exe
+D:\work\UnityProjects\navmesh_c#\navimeshtest\navimeshtest\bin\Debug\navimeshtest.pdb
+D:\work\UnityProjects\navmesh_c#\navimeshtest\navimeshtest\obj\Debug\navimeshtest.csprojAssemblyReference.cache
+D:\work\UnityProjects\navmesh_c#\navimeshtest\navimeshtest\obj\Debug\navimeshtest.Form1.resources
+D:\work\UnityProjects\navmesh_c#\navimeshtest\navimeshtest\obj\Debug\navimeshtest.Properties.Resources.resources
+D:\work\UnityProjects\navmesh_c#\navimeshtest\navimeshtest\obj\Debug\navimeshtest.csproj.GenerateResource.cache
+D:\work\UnityProjects\navmesh_c#\navimeshtest\navimeshtest\obj\Debug\navimeshtest.csproj.CoreCompileInputs.cache
+D:\work\UnityProjects\navmesh_c#\navimeshtest\navimeshtest\obj\Debug\navimeshtest.exe
+D:\work\UnityProjects\navmesh_c#\navimeshtest\navimeshtest\obj\Debug\navimeshtest.pdb
