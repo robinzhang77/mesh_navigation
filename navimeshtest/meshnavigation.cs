@@ -16,7 +16,7 @@ namespace navimeshtest
         public float y;
         public float z;
 
-        public bool IsEqual(ref Vector3 v)
+        public bool IsEqual(Vector3 v)
         {
             return (v.x == x && v.y == y && v.z == z);
         }
@@ -47,19 +47,19 @@ namespace navimeshtest
         public Edge c;
         public Vector3 center = null;
         public int idx;
-        public Vector3 CenterPos(ref Vertexts vers)
+        public Vector3 CenterPos(Vertexts vers)
         {
             if (center == null)
             {
-                center = (a.GetStartPos(ref vers) + b.GetStartPos(ref vers) + c.GetStartPos(ref vers)) / 3;
+                center = (a.GetStartPos(vers) + b.GetStartPos(vers) + c.GetStartPos(vers)) / 3;
             }
 
             return center;
         }
-        public float Distance(ref Vertexts vers, ref Triangle tri)
+        public float Distance(Vertexts vers, Triangle tri)
         {
-            Vector3 centerPos = this.CenterPos(ref vers);
-            Vector3 tarCenterPos = tri.CenterPos(ref vers);
+            Vector3 centerPos = this.CenterPos(vers);
+            Vector3 tarCenterPos = tri.CenterPos(vers);
 
             double dVal = Math.Pow((tarCenterPos.x - center.x), 2.0) + Math.Pow((tarCenterPos.z - center.z), 2.0);
             return Convert.ToSingle(dVal);
@@ -83,12 +83,12 @@ namespace navimeshtest
             return false;
         }
 
-        public Vector3 GetStartPos(ref Vertexts vers)
+        public Vector3 GetStartPos(Vertexts vers)
         {
             return vers[startIdx];
         }
 
-        public Vector3 GetEndPos(ref Vertexts vers)
+        public Vector3 GetEndPos(Vertexts vers)
         {
             return vers[endIdx];
         }
@@ -96,13 +96,23 @@ namespace navimeshtest
 
     class MeshNavigation
     {
-        public List<int> indices = new List<int>();
-        public Vertexts newVectexts = new Vertexts();
-        public float meshWith = .0f;
-        public float meshHeight = .0f;
-        public List<Triangle> triangles = new List<Triangle>();
-        
-        private Vertexts tempVectexts = new Vertexts();
+        public List<int> indices { private set; get; }
+        public Vertexts newVectexts;
+        public float meshWeith { private set; get; }
+        public float meshHeight { private set; get; }
+        public List<Triangle> triangles{ private set; get; }
+
+        private Vertexts tempVectexts;
+
+        public MeshNavigation()
+        {
+            indices = new List<int>();
+            newVectexts = new Vertexts();
+            meshWeith = 0;
+            meshHeight = 0;
+            triangles = new List<Triangle>();
+            tempVectexts = new Vertexts();
+        }
 
         public void LoadMeshData(string strFilepath)
         {
@@ -139,7 +149,7 @@ namespace navimeshtest
                 if (v.x > fMaxX) fMaxX = v.x;
                 if (v.z > fMaxZ) fMaxZ = v.z;
             }
-            meshWith = (fMaxX - fMinX);
+            meshWeith = (fMaxX - fMinX);
             meshHeight = (fMaxZ - fMinZ);
             fs.Close();
 
@@ -172,7 +182,7 @@ namespace navimeshtest
                 Vector3 v = tempVectexts[i];
                 int foundIdx = -1;
 
-                if (!IsExistIn(ref v, out foundIdx))
+                if (!IsExistIn(v, out foundIdx))
                 {
                     newVectexts[i] = v;
                 }
@@ -195,12 +205,12 @@ namespace navimeshtest
             }
         }
 
-        private bool IsExistIn(ref Vector3 v, out int idx)
+        private bool IsExistIn(Vector3 v, out int idx)
         {
             idx = -1;
             foreach (var vv in newVectexts)
             {
-                bool bVal = vv.Value.IsEqual(ref v);
+                bool bVal = vv.Value.IsEqual(v);
                 if (bVal) 
                 {
                     idx = vv.Key;
@@ -240,17 +250,17 @@ namespace navimeshtest
             }
         }
 
-        //建立邻居关系
+        //建立邻居关系(三角形的每条边地应哪个三角形，且计算G值)
         private void BuildNeighbor()
         {
             for (int i = 0; i < triangles.Count; i++)
             {
                 Triangle tri = triangles[i];
-                BuildSingleTriangle(ref tri);
+                BuildSingleTriangle(tri);
             }
         }
 
-        private void BuildSingleTriangle(ref Triangle inTri)
+        private void BuildSingleTriangle(Triangle inTri)
         {
             for (int i=0; i<triangles.Count; i++)
             {
@@ -260,7 +270,7 @@ namespace navimeshtest
                     continue;
                 }
 
-                float fDistance = tri.Distance(ref newVectexts, ref inTri);
+                float fDistance = tri.Distance(newVectexts, inTri);
 
                 if (tri.a.IsEqual(inTri.a))
                 {
@@ -321,7 +331,7 @@ namespace navimeshtest
             }
         }
 
-        private bool FindPath(ref Vector3 startPos, ref Vector3 endPos, ref Paths paths)
+        private bool FindPath(Vector3 startPos, Vector3 endPos, Paths paths)
         {
             paths.Clear();
 

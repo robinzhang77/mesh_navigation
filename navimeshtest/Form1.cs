@@ -51,7 +51,7 @@ namespace navimeshtest
 
             foreach (Triangle tri in meshnav.triangles)
             {
-                DrawTriangle_1(g, tri.a.GetStartPos(ref meshnav.newVectexts), tri.b.GetStartPos(ref meshnav.newVectexts), tri.c.GetStartPos(ref meshnav.newVectexts));
+                DrawTriangle_1(g, tri.a.GetStartPos(meshnav.newVectexts), tri.b.GetStartPos(meshnav.newVectexts), tri.c.GetStartPos(meshnav.newVectexts));
             }
         }
 
@@ -62,7 +62,7 @@ namespace navimeshtest
             int ClientHeight = this.Height;
             float fWidthOffset = ClientWidth / 2;
             float fHeightOffset = ClientHeight / 2;
-            float xScale = (this.Width) / meshnav.meshWith;
+            float xScale = (this.Width) / meshnav.meshWeith;
             float zScale = (this.Height) / meshnav.meshHeight;
             float fScale = Math.Min(xScale, zScale);
             fScale = fScale * 0.6f;
