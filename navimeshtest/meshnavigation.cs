@@ -97,7 +97,7 @@ namespace navimeshtest
     class MeshNavigation
     {
         public List<int> indices { private set; get; }
-        public Vertexts newVectexts;
+        public Vertexts newVectexts { private set; get; }
         public float meshWeith { private set; get; }
         public float meshHeight { private set; get; }
         public List<Triangle> triangles{ private set; get; }
