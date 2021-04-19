@@ -13,7 +13,7 @@ namespace navimeshtest
 {
     public partial class Form1 : Form
     {
-        meshnavigation meshnav = new meshnavigation();
+        MeshNavigation meshnav = new MeshNavigation();
         public Form1()
         {
             InitializeComponent();

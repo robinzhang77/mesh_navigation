@@ -94,7 +94,7 @@ namespace navimeshtest
         }
     }
 
-    class meshnavigation
+    class MeshNavigation
     {
         public List<int> indices = new List<int>();
         public Vertexts newVectexts = new Vertexts();
