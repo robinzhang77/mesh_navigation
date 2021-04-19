@@ -13,7 +13,8 @@ namespace navimeshtest
 {
     public partial class Form1 : Form
     {
-        MeshNavigation meshnav = new MeshNavigation();
+        private MeshNavigation meshnav = new MeshNavigation();
+        private AStarathFind4Tri asf = null;
         public Form1()
         {
             InitializeComponent();
@@ -29,6 +30,8 @@ namespace navimeshtest
             //string strFilepath = "D:/work/UnityProjects/navmesh/Assets/mapdata.data";
             string strFilepath = "./mapdata.data";
             meshnav.LoadMeshData(strFilepath);
+            asf = new AStarathFind4Tri();
+            asf.SetMeshData(meshnav);
             this.Refresh();
         }
 
@@ -108,9 +111,27 @@ namespace navimeshtest
 
         private void Form1_MouseUp(object sender, MouseEventArgs e)
         {
-            Point p = new Point(e.X, e.Y);
-            Vector3 v = ConvertClientPointToVector3(p);
-            Console.WriteLine("mouse pos:{0},{1} ===== {2:f},{3:f}", e.X, e.Y, v.x, v.z);
+           
+        }
+
+        private Point startPos;
+        private Point endPos;
+        private void Form1_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                startPos = e.Location;
+            }
+            else if (e.Button == MouseButtons.Right)
+            {
+                endPos = e.Location;
+
+                Vector3 v1 = ConvertClientPointToVector3(startPos);
+                Vector3 v2 = ConvertClientPointToVector3(endPos);
+                List<Vector3> outPaths = new List<Vector3>();
+                asf.FindPaths(v1, v2, outPaths);
+            }
+
         }
     }
 }
