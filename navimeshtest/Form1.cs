@@ -62,7 +62,7 @@ namespace navimeshtest
             int ClientHeight = this.Height;
             float fWidthOffset = ClientWidth / 2;
             float fHeightOffset = ClientHeight / 2;
-            float xScale = (this.Width) / meshnav.meshWeith;
+            float xScale = (this.Width) / meshnav.meshWidth;
             float zScale = (this.Height) / meshnav.meshHeight;
             float fScale = Math.Min(xScale, zScale);
             fScale = fScale * 0.6f;
@@ -81,9 +81,36 @@ namespace navimeshtest
             g.DrawPolygon(new Pen(Color.Red), pntArr);
         }
 
+        public Vector3 ConvertClientPointToVector3(Point p)
+        {
+            int ClientWidth = this.Width;
+            int ClientHeight = this.Height;
+            float fWidthOffset = ClientWidth / 2;
+            float fHeightOffset = ClientHeight / 2;
+            float xScale = (this.Width) / meshnav.meshWidth;
+            float zScale = (this.Height) / meshnav.meshHeight;
+            float fScale = Math.Min(xScale, zScale);
+            fScale = fScale * 0.6f;
+
+            float xx = (p.X - fWidthOffset) / fScale;
+            float zz = (p.Y - fHeightOffset) / fScale;
+            Vector3 v = new Vector3();
+            v.x = xx;
+            v.z = zz;
+            v.y = 0;
+            return v;
+        }
+
         private void Form1_Resize(object sender, EventArgs e)
         {
             this.Refresh();
+        }
+
+        private void Form1_MouseUp(object sender, MouseEventArgs e)
+        {
+            Point p = new Point(e.X, e.Y);
+            Vector3 v = ConvertClientPointToVector3(p);
+            Console.WriteLine("mouse pos:{0},{1} ===== {2:f},{3:f}", e.X, e.Y, v.x, v.z);
         }
     }
 }

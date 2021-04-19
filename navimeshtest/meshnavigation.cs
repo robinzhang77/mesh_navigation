@@ -8,9 +8,8 @@ using System.IO;
 namespace navimeshtest
 {
     using Vertexts = Dictionary<int, Vector3>;
-    using Paths = List<Vector3>;
 
-    class Vector3
+    public class Vector3
     {
         public float x;
         public float y;
@@ -30,6 +29,15 @@ namespace navimeshtest
             return v;
         }
 
+        public static Vector3 operator -(Vector3 a, Vector3 b)
+        {
+            Vector3 v = new Vector3();
+            v.x = b.x - a.x;
+            v.y = b.y - a.y;
+            v.z = b.z - a.z;
+            return v;
+        }
+
         public static Vector3 operator/(Vector3 a, float fVal)
         {
             Vector3 v = new Vector3();
@@ -38,7 +46,21 @@ namespace navimeshtest
             v.z = a.z / fVal;
             return v;
         }
-    }
+
+        public float Dot(Vector3 v)
+        {
+            return x * v.x +  y * v.y + z * v.z;
+        }
+
+        public Vector3 Cross(Vector3 v)
+        {
+            Vector3 vv = new Vector3();
+            v.x = y * v.z - z * v.y;
+            v.y = z * v.x - x * v.z;
+            v.z = x * v.y - y * v.x;
+            return vv;
+        }
+}
 
     class Triangle
     {
@@ -63,6 +85,40 @@ namespace navimeshtest
 
             double dVal = Math.Pow((tarCenterPos.x - center.x), 2.0) + Math.Pow((tarCenterPos.z - center.z), 2.0);
             return Convert.ToSingle(dVal);
+        }
+
+        //重心法
+        public bool PointIsInTriangle(Vertexts vers, Vector3 P)
+        {
+            Vector3 A = a.GetStartPos(vers);
+            Vector3 B = b.GetStartPos(vers);
+            Vector3 C = c.GetStartPos(vers);
+
+            Vector3 v0 = C - A;
+            Vector3 v1 = B - A;
+            Vector3 v2 = P - A;
+
+            float dot00 = v0.Dot(v0);
+            float dot01 = v0.Dot(v1);
+            float dot02 = v0.Dot(v2);
+            float dot11 = v1.Dot(v1);
+            float dot12 = v1.Dot(v2);
+
+            float inverDeno = 1 / (dot00 * dot11 - dot01 * dot01);
+
+            float u = (dot11 * dot02 - dot01 * dot12) * inverDeno;
+            if (u < 0 || u > 1) // if u out of range, return directly
+            {
+                return false;
+            }
+
+            float v = (dot00 * dot12 - dot01 * dot02) * inverDeno;
+            if (v < 0 || v > 1) // if v out of range, return directly
+            {
+                return false;
+            }
+
+            return u + v <= 1;
         }
     }
 
@@ -92,13 +148,18 @@ namespace navimeshtest
         {
             return vers[endIdx];
         }
+
+        public Vector3 GetVector(Vertexts vers)
+        {
+            return GetEndPos(vers) - GetStartPos(vers);
+        }
     }
 
     class MeshNavigation
     {
         public List<int> indices { private set; get; }
         public Vertexts newVectexts { private set; get; }
-        public float meshWeith { private set; get; }
+        public float meshWidth { private set; get; }
         public float meshHeight { private set; get; }
         public List<Triangle> triangles{ private set; get; }
 
@@ -108,7 +169,7 @@ namespace navimeshtest
         {
             indices = new List<int>();
             newVectexts = new Vertexts();
-            meshWeith = 0;
+            meshWidth = 0;
             meshHeight = 0;
             triangles = new List<Triangle>();
             tempVectexts = new Vertexts();
@@ -149,7 +210,7 @@ namespace navimeshtest
                 if (v.x > fMaxX) fMaxX = v.x;
                 if (v.z > fMaxZ) fMaxZ = v.z;
             }
-            meshWeith = (fMaxX - fMinX);
+            meshWidth = (fMaxX - fMinX);
             meshHeight = (fMaxZ - fMinZ);
             fs.Close();
 
@@ -157,6 +218,35 @@ namespace navimeshtest
             BuildTriangles();
             BuildNeighbor();
 
+            Vector3 vv = new Vector3();
+            vv.x = 40;
+            vv.y = 0;
+            vv.z = 40.5f;
+            Triangle tri = GetOwnerTriangle(vv);
+            if (tri == null)
+            {
+                int a = 100;
+                a++;
+            }
+            else
+            {
+                int a = 100;
+                a++;
+            }
+
+        }
+
+        //需要优化，目前暂时遍历
+        public Triangle GetOwnerTriangle(Vector3 v)
+        {
+            foreach(var tri in triangles)
+            {
+                if (tri.PointIsInTriangle(newVectexts, v))
+                {
+                    return tri;
+                }
+            }
+            return null;
         }
 
         private int ReadInt(FileStream fs)
@@ -329,13 +419,6 @@ namespace navimeshtest
                     tri.c.gVal = inTri.c.gVal = fDistance;
                 }
             }
-        }
-
-        private bool FindPath(Vector3 startPos, Vector3 endPos, Paths paths)
-        {
-            paths.Clear();
-
-            return true;
         }
     }
 }
