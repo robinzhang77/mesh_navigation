@@ -38,15 +38,20 @@ namespace navimeshtest
             g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
             g.Clear(Color.Black);
 
-            for (int i = 0; i < meshnav.indices.Count();)
+            //for (int i = 0; i < meshnav.indices.Count();)
+            //{
+            //    Vector3 v1 = meshnav.newVectexts[meshnav.indices[i]];
+            //    i++;
+            //    Vector3 v2 = meshnav.newVectexts[meshnav.indices[i]];
+            //    i++;
+            //    Vector3 v3 = meshnav.newVectexts[meshnav.indices[i]];
+            //    i++;
+            //    DrawTriangle_1(g, v1, v2, v3);
+            //}
+
+            foreach (Triangle tri in meshnav.triangles)
             {
-                Vector3 v1 = meshnav.vectexts[meshnav.indices[i]];
-                i++;
-                Vector3 v2 = meshnav.vectexts[meshnav.indices[i]];
-                i++;
-                Vector3 v3 = meshnav.vectexts[meshnav.indices[i]];
-                i++;
-                DrawTriangle_1(g, v1, v2, v3);
+                DrawTriangle_1(g, tri.a.GetStartPos(ref meshnav.newVectexts), tri.b.GetStartPos(ref meshnav.newVectexts), tri.c.GetStartPos(ref meshnav.newVectexts));
             }
         }
 
