@@ -79,6 +79,7 @@ namespace navimeshtest
         public float runtimeGVal = 0.0f; //从起点到这个点的消耗值 
         public float runtimeHVal = 0.0f; //从这个点到终点的消耗值
         public int parentIdx = -1;
+        public List<int> samePointTriangles = new List<int>();
         
         public Vector3 CenterPos(Vertexts vers)
         {
@@ -136,6 +137,20 @@ namespace navimeshtest
             }
 
             return u + v <= 1;
+        }
+
+        //判断两个三角形是否有共公的点
+        public bool HasSamePoint(Triangle tri)
+        {
+            return (a.startIdx == tri.a.startIdx ||
+                a.startIdx == tri.b.startIdx ||
+                a.startIdx == tri.c.startIdx ||
+                b.startIdx == tri.a.startIdx ||
+                b.startIdx == tri.b.startIdx ||
+                b.startIdx == tri.c.startIdx ||
+                c.startIdx == tri.a.startIdx ||
+                c.startIdx == tri.b.startIdx ||
+                c.startIdx == tri.c.startIdx);
         }
     }
 
@@ -289,6 +304,12 @@ namespace navimeshtest
                     subTri.neighborGVal = tri.c.gVal;
                     outTris.Add(subTri);
                 }
+
+                foreach (var t in tri.samePointTriangles)
+                {
+                    Triangle subTri = triangles[t];
+                    outTris.Add(subTri);
+                }
             }
         }
 
@@ -425,6 +446,7 @@ namespace navimeshtest
             float cDistance = a.c.GetStartPos(newVectexts).Distance(b);
 
             return Math.Min(Math.Min(aDistance, bDistance), cDistance);
+            //return aDistance + bDistance + cDistance;
         }
 
         private void BuildSingleTriangle(Triangle inTri)
@@ -495,6 +517,11 @@ namespace navimeshtest
                     inTri.c.triangleIdx = tri.idx;
                     tri.c.gVal = inTri.c.gVal = fDistance;
                 }
+                //是否有公共的点
+                //else if (tri.HasSamePoint(inTri))
+                //{
+                //    tri.samePointTriangles.Add(inTri.idx);
+                //}
             }
         }
     }

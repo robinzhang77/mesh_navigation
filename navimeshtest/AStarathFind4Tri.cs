@@ -59,10 +59,11 @@ namespace navimeshtest
                 {
                     float gVal = tri.neighborGVal + triCurr.runtimeGVal;
                     gVal = 0;
-
-
+                    gVal = triCurr.runtimeGVal + meshData.GetDistanceByTrianglePoint(tri, endPos);
                     //float hVal = meshData.GetDistance(tri, triEnd);
-                    float hVal = meshData.GetDistanceByTrianglePoint(tri, endPos);
+                    //float hVal = meshData.GetDistanceByTrianglePoint(tri, endPos);
+                    float hVal = 0.0f;
+                    
                     float fVal = gVal + hVal;
                     
                     if (IsOpenOrClosed(tri))
