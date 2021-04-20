@@ -95,7 +95,7 @@ namespace navimeshtest
         private void BuildPath(Triangle triStart, Triangle triEnd, TriangleList outPaths)
         {
             outPaths.Clear();
-            outPaths.Add(triEnd);
+            //outPaths.Add(triEnd);
             int parentIdx = triEnd.parentIdx;
             
             while (parentIdx != triStart.idx && parentIdx != -1)
@@ -105,8 +105,16 @@ namespace navimeshtest
                 {
                     outPaths.Add(tri);
                     parentIdx = tri.parentIdx;
+
+                    if (outPaths.Count > 1000)
+                    {
+                        Console.WriteLine("BuildPath error~~~~~~~~~~~~~~~~~");
+                        break;
+                    }
                 }
             }
+
+            //outPaths.Add(triStart);
 
             outPaths.Reverse();
         }

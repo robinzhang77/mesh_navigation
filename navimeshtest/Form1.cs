@@ -41,26 +41,34 @@ namespace navimeshtest
             g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
             g.Clear(Color.Black);
 
-            //for (int i = 0; i < meshnav.indices.Count();)
-            //{
-            //    Vector3 v1 = meshnav.newVectexts[meshnav.indices[i]];
-            //    i++;
-            //    Vector3 v2 = meshnav.newVectexts[meshnav.indices[i]];
-            //    i++;
-            //    Vector3 v3 = meshnav.newVectexts[meshnav.indices[i]];
-            //    i++;
-            //    DrawTriangle_1(g, v1, v2, v3);
-            //}
-
             foreach (var triInfo in meshnav.triangles)
             {
                 Triangle tri = triInfo.Value;
                 DrawTriangle_1(g, tri.a.GetStartPos(meshnav.newVectexts), tri.b.GetStartPos(meshnav.newVectexts), tri.c.GetStartPos(meshnav.newVectexts));
             }
+
+            DrawPath(g);
         }
 
-        // 绘制三角形      
-        private void DrawTriangle_1(Graphics g, Vector3 v1, Vector3 v2, Vector3 v3)
+        private void DrawPath(Graphics g)
+        {
+            if (outPaths.Count == 0) return;
+            
+            List<Point> arrPoints = new List<Point>();
+            arrPoints.Add(startPos);
+            foreach (var tri in outPaths)
+            {
+                Vector3 v = tri.CenterPos(meshnav.newVectexts);
+                Point p = ConvertVector3ToPoint(v);
+                arrPoints.Add(p);
+            }
+            arrPoints.Add(endPos);
+
+            Pen pen = new Pen(Color.Green);
+            g.DrawLines(pen, arrPoints.ToArray());
+        }
+
+        private Point ConvertVector3ToPoint(Vector3 v)
         {
             int ClientWidth = this.Width;
             int ClientHeight = this.Height;
@@ -70,17 +78,18 @@ namespace navimeshtest
             float zScale = (this.Height) / meshnav.meshHeight;
             float fScale = Math.Min(xScale, zScale);
             fScale = fScale * 0.6f;
-            //fWidthOffset = fHeightOffset = 0;
-            int x1 = Convert.ToInt32(v1.x * fScale + fWidthOffset);
-            int y1 = Convert.ToInt32(v1.z * fScale + fHeightOffset);
-            int x2 = Convert.ToInt32(v2.x* fScale + fWidthOffset);
-            int y2 = Convert.ToInt32(v2.z* fScale + fHeightOffset);
-            int x3 = Convert.ToInt32(v3.x* fScale + fWidthOffset);
-            int y3 = Convert.ToInt32(v3.z* fScale + fHeightOffset);
 
-            Point point1 = new Point(x1, y1);
-            Point point2 = new Point(x2, y2);
-            Point point3 = new Point(x3, y3);
+            int x1 = Convert.ToInt32(v.x * fScale + fWidthOffset);
+            int y1 = Convert.ToInt32(v.z * fScale + fHeightOffset);
+            return new Point(x1, y1);
+        }
+
+        // 绘制三角形      
+        private void DrawTriangle_1(Graphics g, Vector3 v1, Vector3 v2, Vector3 v3)
+        {
+            Point point1 = ConvertVector3ToPoint(v1);
+            Point point2 = ConvertVector3ToPoint(v2);
+            Point point3 = ConvertVector3ToPoint(v3);
             Point[] pntArr = { point1, point2, point3 };
             g.DrawPolygon(new Pen(Color.Red), pntArr);
         }
@@ -117,6 +126,7 @@ namespace navimeshtest
 
         private Point startPos;
         private Point endPos;
+        List<Triangle> outPaths = new List<Triangle>();
         private void Form1_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
@@ -129,10 +139,13 @@ namespace navimeshtest
 
                 Vector3 v1 = ConvertClientPointToVector3(startPos);
                 Vector3 v2 = ConvertClientPointToVector3(endPos);
-                List<Triangle> outPaths = new List<Triangle>();
-                asf.FindPaths(v1, v2, outPaths);
+                outPaths.Clear();
+                bool bVal = asf.FindPaths(v1, v2, outPaths);
+                if (bVal)
+                {
+                    this.Refresh();
+                }
             }
-
         }
     }
 }
