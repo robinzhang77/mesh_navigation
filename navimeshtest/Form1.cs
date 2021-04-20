@@ -64,7 +64,7 @@ namespace navimeshtest
             }
             arrPoints.Add(endPos);
 
-            Pen pen = new Pen(Color.Green);
+            Pen pen = new Pen(Color.Yellow);
             g.DrawLines(pen, arrPoints.ToArray());
         }
 

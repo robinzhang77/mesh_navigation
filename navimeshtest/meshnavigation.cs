@@ -61,7 +61,12 @@ namespace navimeshtest
             v.z = x * v.y - y * v.x;
             return vv;
         }
-}
+
+        public float Distance(Vector3 v)
+        {
+            return (v.x - x) * (v.x - x) + (v.z - z) * (v.z - z);
+        }
+    }
 
     class Triangle
     {
@@ -402,6 +407,24 @@ namespace navimeshtest
         public float GetDistance(Triangle a, Triangle b)
         {
             return a.Distance(newVectexts, b);
+        }
+
+        //根据三角形的中心点~~到目标点的距离 
+        public float GetDistanceByTriangleCenter(Triangle a, Vector3 b)
+        {
+            Vector3 aPos = a.CenterPos(newVectexts);
+            float fVal = (b.x - aPos.x) * (b.x - aPos.x) + (b.z - aPos.z) * (b.z - aPos.z);
+            return fVal;
+        }
+
+        //计算 取三角形三个角 到目标点最近的距离
+        public float GetDistanceByTrianglePoint(Triangle a, Vector3 b)
+        {
+            float aDistance = a.a.GetStartPos(newVectexts).Distance(b);
+            float bDistance = a.b.GetStartPos(newVectexts).Distance(b);
+            float cDistance = a.c.GetStartPos(newVectexts).Distance(b);
+
+            return Math.Min(Math.Min(aDistance, bDistance), cDistance);
         }
 
         private void BuildSingleTriangle(Triangle inTri)

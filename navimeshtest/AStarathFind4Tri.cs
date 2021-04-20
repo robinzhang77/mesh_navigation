@@ -42,14 +42,15 @@ namespace navimeshtest
             triEnd.runtimeGVal = 0.0f;
             triEnd.runtimeHVal = 0.0f;
 
-            return Search(triStart, triEnd, outPaths);
+            return Search(triStart, triEnd, endPos, outPaths);
         }
 
 
-        private bool Search(Triangle triStart, Triangle triEnd, TriangleList outPaths)
+        private bool Search(Triangle triStart, Triangle triEnd, Vector3 endPos, TriangleList outPaths)
         {
             Triangle triCurr = triStart;
-            while (triCurr != triEnd)
+            
+            while (triCurr != triEnd) 
             {
                 TriangleList arrTirs = new TriangleList();
                 meshData.GetNeightborsAndBuildGVal(triCurr.idx, arrTirs);
@@ -57,7 +58,11 @@ namespace navimeshtest
                 foreach (var tri in arrTirs)
                 {
                     float gVal = tri.neighborGVal + triCurr.runtimeGVal;
-                    float hVal = meshData.GetDistance(tri, triEnd);
+                    gVal = 0;
+
+
+                    //float hVal = meshData.GetDistance(tri, triEnd);
+                    float hVal = meshData.GetDistanceByTrianglePoint(tri, endPos);
                     float fVal = gVal + hVal;
                     
                     if (IsOpenOrClosed(tri))
