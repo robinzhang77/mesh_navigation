@@ -8,6 +8,7 @@ using System.IO;
 namespace navimeshtest
 {
     using Vertexts = Dictionary<int, Vector3>;
+    using Triangles = List<Triangle>;
 
     public class Vector3
     {
@@ -69,6 +70,11 @@ namespace navimeshtest
         public Edge c;
         public Vector3 center = null;
         public int idx;
+        public float neighborGVal = 0.0f; //相对于邻居的g值
+        public float runtimeGVal = 0.0f; //从起点到这个点的消耗值 
+        public float runtimeHVal = 0.0f; //从这个点到终点的消耗值
+        public int parentIdx = -1;
+        
         public Vector3 CenterPos(Vertexts vers)
         {
             if (center == null)
@@ -78,6 +84,12 @@ namespace navimeshtest
 
             return center;
         }
+
+        public float GetRuntimeFVal()
+        {
+            return runtimeGVal + runtimeHVal;
+        }
+
         public float Distance(Vertexts vers, Triangle tri)
         {
             Vector3 centerPos = this.CenterPos(vers);
@@ -86,7 +98,7 @@ namespace navimeshtest
             double dVal = Math.Pow((tarCenterPos.x - center.x), 2.0) + Math.Pow((tarCenterPos.z - center.z), 2.0);
             return Convert.ToSingle(dVal);
         }
-
+        
         //重心法
         public bool PointIsInTriangle(Vertexts vers, Vector3 P)
         {
@@ -161,7 +173,7 @@ namespace navimeshtest
         public Vertexts newVectexts { private set; get; }
         public float meshWidth { private set; get; }
         public float meshHeight { private set; get; }
-        public List<Triangle> triangles{ private set; get; }
+        public Dictionary<int, Triangle> triangles { private set; get; }
 
         private Vertexts tempVectexts;
 
@@ -171,7 +183,7 @@ namespace navimeshtest
             newVectexts = new Vertexts();
             meshWidth = 0;
             meshHeight = 0;
-            triangles = new List<Triangle>();
+            triangles = new Dictionary<int, Triangle>();
             tempVectexts = new Vertexts();
         }
 
@@ -241,10 +253,45 @@ namespace navimeshtest
         {
             foreach(var tri in triangles)
             {
-                if (tri.PointIsInTriangle(newVectexts, v))
+                if (tri.Value.PointIsInTriangle(newVectexts, v))
                 {
-                    return tri;
+                    return tri.Value;
                 }
+            }
+            return null;
+        }
+
+        public void GetNeightborsAndBuildGVal(int nTriIdx, Triangles outTris)
+        {
+            if (triangles.ContainsKey(nTriIdx))
+            {
+                Triangle tri = triangles[nTriIdx];
+                if (tri.a.triangleIdx >= 0)
+                {
+                    Triangle subTri = triangles[tri.a.triangleIdx];
+                    subTri.neighborGVal = tri.a.gVal;
+                    outTris.Add(subTri);
+                }
+                if (tri.b.triangleIdx >= 0)
+                {
+                    Triangle subTri = triangles[tri.b.triangleIdx];
+                    subTri.neighborGVal = tri.b.gVal;
+                    outTris.Add(subTri);
+                }
+                if (tri.c.triangleIdx >= 0)
+                {
+                    Triangle subTri = triangles[tri.c.triangleIdx];
+                    subTri.neighborGVal = tri.c.gVal;
+                    outTris.Add(subTri);
+                }
+            }
+        }
+
+        public Triangle GetTriangle(int idx)
+        {
+            if (triangles.ContainsKey(idx))
+            {
+                return triangles[idx];
             }
             return null;
         }
@@ -312,6 +359,7 @@ namespace navimeshtest
 
         private void BuildTriangles()
         {
+            int idx = 0;
             for (int i = 0; i < indices.Count();)
             {
                 int a = indices[i++];
@@ -335,8 +383,9 @@ namespace navimeshtest
                 tri.b = edge2;
                 tri.c = edge3;
 
-                triangles.Add(tri);
-                tri.idx = triangles.Count - 1;
+                triangles[idx] = tri;
+                tri.idx = idx;
+                idx++;
             }
         }
 
@@ -348,6 +397,11 @@ namespace navimeshtest
                 Triangle tri = triangles[i];
                 BuildSingleTriangle(tri);
             }
+        }
+
+        public float GetDistance(Triangle a, Triangle b)
+        {
+            return a.Distance(newVectexts, b);
         }
 
         private void BuildSingleTriangle(Triangle inTri)

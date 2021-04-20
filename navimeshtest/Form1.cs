@@ -52,8 +52,9 @@ namespace navimeshtest
             //    DrawTriangle_1(g, v1, v2, v3);
             //}
 
-            foreach (Triangle tri in meshnav.triangles)
+            foreach (var triInfo in meshnav.triangles)
             {
+                Triangle tri = triInfo.Value;
                 DrawTriangle_1(g, tri.a.GetStartPos(meshnav.newVectexts), tri.b.GetStartPos(meshnav.newVectexts), tri.c.GetStartPos(meshnav.newVectexts));
             }
         }
@@ -128,7 +129,7 @@ namespace navimeshtest
 
                 Vector3 v1 = ConvertClientPointToVector3(startPos);
                 Vector3 v2 = ConvertClientPointToVector3(endPos);
-                List<Vector3> outPaths = new List<Vector3>();
+                List<Triangle> outPaths = new List<Triangle>();
                 asf.FindPaths(v1, v2, outPaths);
             }
 
