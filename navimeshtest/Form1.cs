@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -48,6 +49,34 @@ namespace navimeshtest
             }
 
             DrawPath(g);
+            DrawPath2(g);
+        }
+
+        private void DrawPath2(Graphics g)
+        {
+            if (outPathVectors.Count == 0) return;
+
+            List<Point> arrPoints = new List<Point>();
+            
+            foreach (var v in outPathVectors)
+            {
+                Point p = ConvertVector3ToPoint(v);
+                arrPoints.Add(p);
+            }
+           
+
+            Pen pen = new Pen(Color.Yellow);
+            pen.DashStyle = System.Drawing.Drawing2D.DashStyle.DashDot;
+            pen.Width = 3.0f;
+            g.DrawLines(pen, arrPoints.ToArray());
+
+            int AtWidth = 20;
+            int halfWith = 10;
+            Point p1 = ConvertVector3ToPoint(outPathVectors[0]);
+            g.FillEllipse(Brushes.Green, p1.X-halfWith, p1.Y-halfWith, AtWidth, AtWidth);
+
+            Point p2 = ConvertVector3ToPoint(outPathVectors[outPathVectors.Count-1]);
+            g.FillEllipse(Brushes.Red, p2.X - halfWith, p2.Y - halfWith, AtWidth, AtWidth);
         }
 
         private void DrawPath(Graphics g)
@@ -91,7 +120,10 @@ namespace navimeshtest
             Point point2 = ConvertVector3ToPoint(v2);
             Point point3 = ConvertVector3ToPoint(v3);
             Point[] pntArr = { point1, point2, point3 };
-            g.DrawPolygon(new Pen(Color.Red), pntArr);
+
+            g.DrawPolygon(new Pen(Color.Yellow), pntArr);
+            g.FillPolygon(Brushes.Blue, pntArr);
+            
         }
 
         public Vector3 ConvertClientPointToVector3(Point p)
@@ -127,6 +159,7 @@ namespace navimeshtest
         private Point startPos;
         private Point endPos;
         List<Triangle> outPaths = new List<Triangle>();
+        List<Vector3> outPathVectors = new List<Vector3>();
         private void Form1_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
@@ -140,11 +173,52 @@ namespace navimeshtest
                 Vector3 v1 = ConvertClientPointToVector3(startPos);
                 Vector3 v2 = ConvertClientPointToVector3(endPos);
                 outPaths.Clear();
-                bool bVal = asf.FindPaths(v1, v2, outPaths);
-                if (bVal)
+                outPathVectors.Clear();
+
+                v1.x = -v1.x;
+                v2.x = -v2.x;
+                float[] startPos1 = new float[3] { v1.x, v1.y, v1.z};
+                float[] endPos1 = new float[3] { v2.x, v2.y, v2.z };
+
+
+                uint nRet = CPPDLL.recast_findpath(1, ref startPos1[0], ref endPos1[0]);
+                if (nRet == (1u << 30))
                 {
-                    this.Refresh();
+                    
+                    //成功
+                    bool isOK = CPPDLL.recast_smooth(1, 2.0f, 0.5f);
+                    if (isOK)
+                    {
+                        int nPahtPointNum = CPPDLL.recast_getcountsmooth(1);
+                        IntPtr ptr = CPPDLL.recast_getpathsmooth(1);
+                        float[] arrSmooths = new float[nPahtPointNum * 3];
+                        Marshal.Copy(ptr, arrSmooths, 0, nPahtPointNum * 3);
+                        //outPathVectors.Add(v1);
+                        for (int i = 0; i < nPahtPointNum; i++)
+                        {
+                            int idx = i * 3;
+                            float x = arrSmooths[idx];
+                            float y = arrSmooths[idx + 1];
+                            float z = arrSmooths[idx + 2];
+                            Console.WriteLine("{0}, {1}, {2} \n", x, y, z);
+
+                            Vector3 pos = new Vector3();
+                            pos.x = -x;
+                            pos.y = y;
+                            pos.z = z;
+                            outPathVectors.Add(pos);
+                        }
+                        //outPathVectors.Add(v2);
+
+                        this.Invalidate();
+                    }
                 }
+
+                //bool bVal = asf.FindPaths(v1, v2, outPaths);
+                //if (bVal)
+                //{
+                //    this.Refresh();
+                //}
             }
         }
     }

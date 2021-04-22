@@ -11,10 +11,10 @@ D:\work\UnityProjects\navmesh_c#\navimeshtest\navimeshtest\obj\Debug\navimeshtes
 S:\work\zgame\test\mesh_navigation\navimeshtest\bin\Debug\navimeshtest.exe.config
 S:\work\zgame\test\mesh_navigation\navimeshtest\bin\Debug\navimeshtest.exe
 S:\work\zgame\test\mesh_navigation\navimeshtest\bin\Debug\navimeshtest.pdb
-S:\work\zgame\test\mesh_navigation\navimeshtest\obj\Debug\navimeshtest.csprojAssemblyReference.cache
 S:\work\zgame\test\mesh_navigation\navimeshtest\obj\Debug\navimeshtest.Form1.resources
 S:\work\zgame\test\mesh_navigation\navimeshtest\obj\Debug\navimeshtest.Properties.Resources.resources
 S:\work\zgame\test\mesh_navigation\navimeshtest\obj\Debug\navimeshtest.csproj.GenerateResource.cache
 S:\work\zgame\test\mesh_navigation\navimeshtest\obj\Debug\navimeshtest.csproj.CoreCompileInputs.cache
 S:\work\zgame\test\mesh_navigation\navimeshtest\obj\Debug\navimeshtest.exe
 S:\work\zgame\test\mesh_navigation\navimeshtest\obj\Debug\navimeshtest.pdb
+S:\work\zgame\test\mesh_navigation\navimeshtest\obj\Debug\navimeshtest.csprojAssemblyReference.cache

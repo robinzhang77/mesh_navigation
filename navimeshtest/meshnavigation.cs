@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using System.Runtime.InteropServices;
 
 namespace navimeshtest
 {
@@ -207,8 +208,22 @@ namespace navimeshtest
             tempVectexts = new Vertexts();
         }
 
+        public void LoadRecastMeshData()
+        {
+            bool bVal = CPPDLL.recast_init();
+            if (bVal)
+            {
+                StringBuilder strSrc = new StringBuilder("meshdata/solo_navmesh.bin");
+                bVal = CPPDLL.recast_loadmap(1, strSrc);
+                if (bVal)
+                {
+                }
+            }
+        }
+
         public void LoadMeshData(string strFilepath)
         {
+            LoadRecastMeshData();
             FileStream fs = new FileStream(strFilepath, FileMode.Open);
             if (fs == null)
             {
