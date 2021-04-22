@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -180,8 +181,11 @@ namespace navimeshtest
                 float[] startPos1 = new float[3] { v1.x, v1.y, v1.z};
                 float[] endPos1 = new float[3] { v2.x, v2.y, v2.z };
 
-
+                Stopwatch sw = new Stopwatch();
+                sw.Start();
                 uint nRet = CPPDLL.recast_findpath(1, ref startPos1[0], ref endPos1[0]);
+                sw.Stop();
+                Console.WriteLine("use time {0}\n", sw.Elapsed.TotalMilliseconds);
                 if (nRet == (1u << 30))
                 {
                     
@@ -200,7 +204,7 @@ namespace navimeshtest
                             float x = arrSmooths[idx];
                             float y = arrSmooths[idx + 1];
                             float z = arrSmooths[idx + 2];
-                            Console.WriteLine("{0}, {1}, {2} \n", x, y, z);
+                            //Console.WriteLine("{0}, {1}, {2} \n", x, y, z);
 
                             Vector3 pos = new Vector3();
                             pos.x = -x;
